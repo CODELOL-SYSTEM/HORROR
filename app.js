@@ -259,7 +259,8 @@ function loop() {
   if (playing) { if (!DN.cine) { update(dt); tutorial(dt); } netTick(dt); if (DN.tick) DN.tick(dt); if (DN.t3) DN.t3(dt); for (const h of DN.hooks) h(dt); } else { camera.position.set(0, 0, 0); rig.position.set(Math.sin(P.t * .1) * 6, 2.4, 8); rig.rotation.y = Math.sin(P.t * .1) * .3; camera.rotation.x = -.1; }
   renderer.render(scene, camera);
 }
-applyQuality(); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); loop(); initFirebase();// DERNIÈRE NUIT — Partie 2 : Billy (IA vue + ouïe), musique de proximité, repousser / esquiver, réapparition.
+applyQuality(); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); loop(); initFirebase();
+// DERNIÈRE NUIT — Partie 2 : Billy (IA vue + ouïe), musique de proximité, repousser / esquiver, réapparition.
 export function init(DN) {
   const { THREE, scene, P, keys, S } = DN, $ = (id) => document.getElementById(id), rnd = (a, b) => a + Math.random() * (b - a);
 
@@ -351,7 +352,8 @@ export function init(DN) {
     const near = 1 - Math.min(1, d / 55), A = DN.AC;
     if (A.currentTime >= nextBeat) { beat(A.currentTime + .02, .12 + near * .75); nextBeat += 1.7 - near * 1.35; }
   };
-}// DERNIÈRE NUIT — Partie 3 : personnages glTF squelettiques animés, cinématique d'introduction, éclairage, lampe torche, sentier.
+}
+// DERNIÈRE NUIT — Partie 3 : personnages glTF squelettiques animés, cinématique d'introduction, éclairage, lampe torche, sentier.
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone } from "three/addons/utils/SkeletonUtils.js";
@@ -452,7 +454,8 @@ export async function init(DN) {
     DN.t3.base = prev;
   };
   if (!DN.startCine) DN.t3 = (dt) => { for (const a of all) a.userData.mixer.update(dt); };
-}// DERNIÈRE NUIT — app4 : hôpital abandonné, rez-de-chaussée (lobby, couloir, 6 chambres/salles, hall des ascenseurs).
+}
+// DERNIÈRE NUIT — app4 : hôpital abandonné, rez-de-chaussée (lobby, couloir, 6 chambres/salles, hall des ascenseurs).
 import * as THREE from "three";
 export function init(DN) {
   const { scene, P, keys } = DN, rnd = (a, b) => a + Math.random() * (b - a), pick = (a) => a[Math.random() * a.length | 0];
@@ -582,7 +585,8 @@ export function init(DN) {
     if (aim.door) aim.door.tgt = aim.door.tgt ? 0 : aim.door.sgn * 1.6; else { msg.textContent = aim.msg; msgT = 2.2; }
     DN.noiseAt = { x: aim.x, z: aim.z, t: performance.now() }; // bruit de porte, exploitable par l'IA de Billy
   });
-}// DERNIÈRE NUIT — app5 : inventaire (3 emplacements), ramasser / poser / jeter / remplacer, armes, objets lançables, cachettes.
+}
+// DERNIÈRE NUIT — app5 : inventaire (3 emplacements), ramasser / poser / jeter / remplacer, armes, objets lançables, cachettes.
 import * as THREE from "three";
 export function init(DN) {
   const { scene, P, rig, camera } = DN, inv = [null, null, null], proj = [], rnd = (a, b) => a + Math.random() * (b - a); let sel = 0, spot = null, back = null;
@@ -627,7 +631,8 @@ export function init(DN) {
       const b = DN.billy, i = DN.billyInfo;                    // Billy peut fouiller la cachette
       if (b && b.visible && i && i.st === "search" && Math.hypot(b.position.x - P.x, b.position.z - P.z) < 2.6 && Math.random() < .35 * dt) { unhide(); P.hidden = false; DN.die && DN.die(); } }
   });
-}// DERNIÈRE NUIT — app6 : Billy avec modèle squelettique + masque, tutoriel de combat après la cinématique.
+}
+// DERNIÈRE NUIT — app6 : Billy avec modèle squelettique + masque, tutoriel de combat après la cinématique.
 import * as THREE from "three";
 export function init(DN) {
   const { scene, P, rig, camera, body } = DN, $ = (id) => document.getElementById(id), M = (c, r = .5) => new THREE.MeshStandardMaterial({ color: c, roughness: r });
