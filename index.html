@@ -1,1 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DERNIÈRE NUIT</title>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+<style>
+:root{--bg:#07090a;--ink:#d9d4c7;--dim:#7d8579;--blood:#8f1d1d;--moss:#2d3b2e;--line:#1f2722}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;overflow:hidden}
+canvas#view{position:fixed;inset:0;width:100%;height:100%;display:block}
+.screen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 120%,#1a2a1c 0,#07090a 65%);z-index:10;overflow:auto}
+.screen.on{display:flex}
+.panel{width:min(520px,92vw);padding:28px;border-left:2px solid var(--blood);background:#0b0f0cdd}
+h1{font-size:clamp(40px,9vw,84px);letter-spacing:.06em;font-weight:400;line-height:1;margin-bottom:6px}
+h2{font-weight:400;font-size:22px;margin-bottom:14px}
+p.sub{color:var(--dim);margin-bottom:22px;font-style:italic}
+label{display:block;margin:12px 0 4px;color:var(--dim);font-size:14px}
+input,select{width:100%;padding:10px;background:#0f1511;color:var(--ink);border:1px solid var(--line);font:inherit}
+button{font:inherit;color:var(--ink);background:transparent;border:1px solid var(--line);padding:11px 16px;margin:6px 6px 0 0;cursor:pointer}
+button:hover,button:focus-visible{border-color:var(--blood);outline:none;background:#1a0f0f}
+button.main{border-color:var(--blood)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+#hud{position:fixed;inset:0;pointer-events:none;z-index:5;display:none}
+#hud.on{display:block}
+#vig{position:absolute;inset:0;transition:backdrop-filter .4s;box-shadow:inset 0 0 160px #000c}
+#tip{position:absolute;right:24px;bottom:24px;max-width:340px;padding:14px;background:#000a;border-left:2px solid var(--blood);font-size:15px}
+#cross{position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px;background:#fff6;border-radius:50%}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:30;background:#000c;padding:8px 16px;border:1px solid var(--line);display:none}
+#roomcode{font-size:34px;letter-spacing:.3em;color:var(--ink)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="view"></canvas>
+<div id="toast"></div>
 
+<!-- Avertissement -->
+<section class="screen on" id="s-warn"><div class="panel">
+<h2>Avertissement</h2>
+<p class="sub">Jeu d'horreur : tension, peur, jumpscares, thèmes de violence. Les effets de sang, d'os et d'organes sont désactivés par défaut (Paramètres). Déconseillé aux personnes sensibles ou sujettes à l'épilepsie photosensible.</p>
+<button class="main" id="b-warn">J'ai compris</button></div></section>
+
+<!-- Menu -->
+<section class="screen" id="s-menu"><div class="panel">
+<h1>DERNIÈRE NUIT</h1><p class="sub">Une nuit de camping. Un seul ne rentrera pas.</p>
+<label for="name">Pseudo</label><input id="name" maxlength="16" value="Joueur">
+<label for="char">Personnage</label>
+<select id="char"><option value="john">John</option><option value="jessica">Jessica</option><option value="none">Sans prénom</option></select>
+<label for="skin">Couleur du vêtement</label><input id="skin" type="color" value="#3b5b3a">
+<label for="diff">Difficulté</label>
+<select id="diff"><option value="easy">Facile</option><option value="mid">Moyen</option><option value="hard">Difficile</option></select>
+<div class="row" style="margin-top:14px">
+<button class="main" id="b-solo">Jouer en solo</button>
+<button id="b-multi">Multijoueur</button>
+<button id="b-set">Paramètres</button></div>
+<p class="sub" id="net" style="margin-top:16px;font-size:13px">Connexion…</p></div></section>
+
+<!-- Paramètres -->
+<section class="screen" id="s-set"><div class="panel"><h2>Paramètres</h2>
+<label for="q">Qualité graphique</label>
+<select id="q"><option value="0">Faible</option><option value="1" selected>Moyenne</option><option value="2">Élevée</option><option value="3">Ultra</option></select>
+<label>Ray tracing</label><input id="rt" value="Non disponible dans ce navigateur" disabled>
+<label for="v0">Volume général</label><input id="v0" type="range" min="0" max="1" step=".05" value=".8">
+<label for="v1">Volume musique</label><input id="v1" type="range" min="0" max="1" step=".05" value=".7">
+<label for="v2">Volume effets</label><input id="v2" type="range" min="0" max="1" step=".05" value=".8">
+<label for="sens">Sensibilité souris</label><input id="sens" type="range" min=".3" max="2" step=".05" value="1">
+<label><input id="gore" type="checkbox" style="width:auto"> Sang, os et organes</label>
+<button class="main" id="b-setok">Retour</button></div></section>
+
+<!-- Multijoueur -->
+<section class="screen" id="s-multi"><div class="panel"><h2>Coopération (2 à 4 joueurs)</h2>
+<div class="row"><button class="main" id="b-create">Créer une salle</button></div>
+<label for="code">Rejoindre avec un code</label><input id="code" maxlength="5" style="text-transform:uppercase">
+<div class="row"><button id="b-join">Rejoindre</button></div>
+<div id="lobby" style="display:none;margin-top:18px"><p class="sub">Code de la salle</p><div id="roomcode"></div><p id="plist" class="sub"></p>
+<button class="main" id="b-start" style="display:none">Lancer la partie</button></div>
+<button id="b-multiback" style="margin-top:14px">Retour</button></div></section>
+
+<div id="hud"><div id="vig"></div><div id="cross"></div><div id="tip"></div></div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
